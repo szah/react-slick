@@ -64,6 +64,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _react = __webpack_require__(2);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -128,6 +130,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  },
+	  nextSlide: function nextSlide() {
+	    this.refs.slider.nextSlide();
+	  },
+	  previousSlide: function previousSlide() {
+	    this.refs.slider.previousSlide();
+	  },
 	  render: function render() {
 	    var _this2 = this;
 
@@ -162,8 +170,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      return _react2.default.createElement(
 	        _innerSlider.InnerSlider,
-	        settings,
-	        children
+	        _extends({ ref: 'slider' }, settings),
+	        this.props.children
 	      );
 	    }
 	  }
@@ -286,6 +294,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  onWindowResized: function onWindowResized() {
 	    this.update(this.props);
+	    // animating state should be cleared while resizing, otherwise autoplay stops working
+	    this.setState({
+	      animating: false
+	    });
+	  },
+	  nextSlide: function nextSlide() {
+	    this.changeSlide({ message: 'next' });
+	  },
+	  previousSlide: function previousSlide() {
+	    this.changeSlide({ message: 'previous' });
 	  },
 	  render: function render() {
 	    var className = (0, _classnames2.default)('slick-initialized', 'slick-slider', this.props.className);
@@ -471,6 +489,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  swipeMove: function swipeMove(e) {
 	    if (!this.state.dragging) {
+	      e.preventDefault();
 	      return;
 	    }
 	    if (this.state.animating) {
@@ -527,6 +546,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  swipeEnd: function swipeEnd(e) {
 	    if (!this.state.dragging) {
+	      e.preventDefault();
 	      return;
 	    }
 	    var touchObject = this.state.touchObject;
@@ -1679,8 +1699,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Credit: http://stackoverflow.com/a/13735425/1849458
 	    var dots = Array.apply(null, Array(dotCount + 1).join('0').split('')).map(function (x, i) {
 
+	      var leftBound = i * _this.props.slidesToScroll;
+	      var rightBound = i * _this.props.slidesToScroll + (_this.props.slidesToScroll - 1);
 	      var className = (0, _classnames2.default)({
-	        'slick-active': _this.props.currentSlide === i * _this.props.slidesToScroll
+	        'slick-active': _this.props.currentSlide >= leftBound && _this.props.currentSlide <= rightBound
 	      });
 
 	      var dotOptions = {
@@ -1735,7 +1757,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  clickHandler: function clickHandler(options, e) {
-	    e.preventDefault();
+	    if (e) {
+	      e.preventDefault();
+	    }
 	    this.props.clickHandler(options, e);
 	  },
 	  render: function render() {
@@ -1774,7 +1798,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  displayName: 'NextArrow',
 
 	  clickHandler: function clickHandler(options, e) {
-	    e.preventDefault();
+	    if (e) {
+	      e.preventDefault();
+	    }
 	    this.props.clickHandler(options, e);
 	  },
 	  render: function render() {
