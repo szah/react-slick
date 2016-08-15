@@ -749,7 +749,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var slideList = _reactDom2.default.findDOMNode(this.refs.list);
 	    var listWidth = this.getWidth(slideList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = (trackWidth - this.getPaddings(slideList)) / props.slidesToShow;
+	    var slideWidth = trackWidth / props.slidesToShow - this.getPaddings(slideList);
 
 	    var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
