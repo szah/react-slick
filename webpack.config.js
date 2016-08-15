@@ -22,12 +22,12 @@ module.exports = {
       {
         test: /\.scss$/,
         loader: 'style!css!sass?outputStyle=expanded&' + 'includePaths[]=' +
-                  (path.resolve(__dirname, './node_modules'))
+        (path.resolve(__dirname, './node_modules'))
       },
-      { test: /\.md$/, loader: 'html!markdown' }
+      {test: /\.md$/, loader: 'html!markdown'}
     ]
   },
-  postcss: [ autoprefixer({ browsers: ['last 2 version'] }) ],
+  postcss: [autoprefixer({browsers: ['last 2 version']})],
   resolve: {
     extensions: ['', '.js', '.jsx']
   },
