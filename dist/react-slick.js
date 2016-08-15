@@ -286,6 +286,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  onWindowResized: function onWindowResized() {
 	    this.update(this.props);
+	    // animating state should be cleared while resizing, otherwise autoplay stops working
+	    this.setState({
+	      animating: false
+	    });
 	  },
 	  render: function render() {
 	    var className = (0, _classnames2.default)('slick-initialized', 'slick-slider', this.props.className);
@@ -471,6 +475,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  swipeMove: function swipeMove(e) {
 	    if (!this.state.dragging) {
+	      e.preventDefault();
 	      return;
 	    }
 	    if (this.state.animating) {
@@ -527,6 +532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  swipeEnd: function swipeEnd(e) {
 	    if (!this.state.dragging) {
+	      e.preventDefault();
 	      return;
 	    }
 	    var touchObject = this.state.touchObject;
@@ -770,9 +776,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // This method has mostly same code as initialize method.
 	    // Refactor it
 	    var slideCount = _react2.default.Children.count(props.children);
-	    var listWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.list));
+	    var slickList = _reactDom2.default.findDOMNode(this.refs.list);
+	    var listWidth = this.getWidth(slickList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = this.getWidth(_reactDom2.default.findDOMNode(this)) / props.slidesToShow;
+	    var slideWidth = this.getCurrentSlideOf(slickList) / props.slidesToShow;
 
 	    // pause slider if autoplay is set to false
 	    if (!props.autoplay) this.pause();
@@ -798,13 +805,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return elem.getBoundingClientRect().width || elem.offsetWidth;
 	  },
 	  adaptHeight: function adaptHeight() {
-	    if (this.props.adaptiveHeight) {
-	      var selector = '[data-index="' + this.state.currentSlide + '"]';
-	      if (this.refs.list) {
-	        var slickList = _reactDom2.default.findDOMNode(this.refs.list);
-	        slickList.style.height = slickList.querySelector(selector).offsetHeight + 'px';
-	      }
+	    if (this.props.adaptiveHeight && this.refs.list) {
+	      var slickList = _reactDom2.default.findDOMNode(this.refs.list);
+	      slickList.style.height = this.getCurrentSlideOf(slickList).offsetHeight + 'px';
 	    }
+	  },
+	  getCurrentSlideOf: function getCurrentSlideOf(slickList) {
+	    var selector = '[data-index="' + this.state.currentSlide + '"]';
+	    return slickList.querySelector(selector);
 	  },
 	  slideHandler: function slideHandler(index) {
 	    var _this = this;
@@ -1679,8 +1687,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Credit: http://stackoverflow.com/a/13735425/1849458
 	    var dots = Array.apply(null, Array(dotCount + 1).join('0').split('')).map(function (x, i) {
 
+	      var leftBound = i * _this.props.slidesToScroll;
+	      var rightBound = i * _this.props.slidesToScroll + (_this.props.slidesToScroll - 1);
 	      var className = (0, _classnames2.default)({
-	        'slick-active': _this.props.currentSlide === i * _this.props.slidesToScroll
+	        'slick-active': _this.props.currentSlide >= leftBound && _this.props.currentSlide <= rightBound
 	      });
 
 	      var dotOptions = {
@@ -1735,7 +1745,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	  clickHandler: function clickHandler(options, e) {
-	    e.preventDefault();
+	    if (e) {
+	      e.preventDefault();
+	    }
 	    this.props.clickHandler(options, e);
 	  },
 	  render: function render() {
@@ -1774,7 +1786,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  displayName: 'NextArrow',
 
 	  clickHandler: function clickHandler(options, e) {
-	    e.preventDefault();
+	    if (e) {
+	      e.preventDefault();
+	    }
 	    this.props.clickHandler(options, e);
 	  },
 	  render: function render() {
