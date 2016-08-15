@@ -39,7 +39,7 @@ export var InnerSlider = React.createClass({
       });
     }
   },
-  componentDidMount: function componentDidMount() {
+  componentDidMount: function () {
     // Hack for autoplay -- Inspect Later
     this.initialize(this.props);
     this.adaptHeight();
@@ -49,7 +49,7 @@ export var InnerSlider = React.createClass({
       window.attachEvent('onresize', this.onWindowResized);
     }
   },
-  componentWillUnmount: function componentWillUnmount() {
+  componentWillUnmount: function () {
     if (window.addEventListener) {
       window.removeEventListener('resize', this.onWindowResized);
     } else {
@@ -81,6 +81,9 @@ export var InnerSlider = React.createClass({
     })
   },
   render: function () {
+    if (!process.browser) {
+      this.componentDidMount();
+    }
     var className = classnames('slick-initialized', 'slick-slider', this.props.className);
 
     var trackProps = {
