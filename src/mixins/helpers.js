@@ -39,10 +39,11 @@ var helpers = {
     // This method has mostly same code as initialize method.
     // Refactor it
     var slideCount = React.Children.count(props.children);
-    var slickList = ReactDOM.findDOMNode(this.refs.list);
-    var listWidth = this.getWidth(slickList);
+    var listWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.list));
+    var paddings = parseFloat(getComputedStyle(ReactDOM.findDOMNode(this.refs.list)).paddingLeft) +
+      parseFloat(getComputedStyle(ReactDOM.findDOMNode(this.refs.list)).paddingRight);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = this.getWidth(this.getCurrentSlideOf(slickList))/props.slidesToShow;
+    var slideWidth = (this.getWidth(ReactDOM.findDOMNode(this)) - paddings)/props.slidesToShow;
 
     // pause slider if autoplay is set to false
     if(!props.autoplay)
@@ -69,14 +70,13 @@ var helpers = {
     return elem.getBoundingClientRect().width || elem.offsetWidth;
   },
   adaptHeight: function () {
-    if (this.props.adaptiveHeight && this.refs.list) {
-      var slickList = ReactDOM.findDOMNode(this.refs.list);
-      slickList.style.height = this.getCurrentSlideOf(slickList).offsetHeight + 'px';
+    if (this.props.adaptiveHeight) {
+      var selector = '[data-index="' + this.state.currentSlide +'"]';
+      if (this.refs.list) {
+        var slickList = ReactDOM.findDOMNode(this.refs.list);
+        slickList.style.height = slickList.querySelector(selector).offsetHeight + 'px';
+      }
     }
-  },
-  getCurrentSlideOf: function (slickList) {
-    var selector = '[data-index="' + this.state.currentSlide +'"]';
-    return slickList.querySelector(selector);
   },
   slideHandler: function (index) {
     // Functionality of animateSlide and postSlide is merged into this function
