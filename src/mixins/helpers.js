@@ -9,9 +9,10 @@ import assign from 'object-assign';
 var helpers = {
   initialize: function (props) {
     var slideCount = React.Children.count(props.children);
-    var listWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.list));
+    var slideList = ReactDOM.findDOMNode(this.refs.list);
+    var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = trackWidth/props.slidesToShow;
+    var slideWidth = trackWidth - this.getPaddings(slideList)/props.slidesToShow;
 
     var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -39,11 +40,10 @@ var helpers = {
     // This method has mostly same code as initialize method.
     // Refactor it
     var slideCount = React.Children.count(props.children);
-    var listWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.list));
-    var paddings = parseFloat(getComputedStyle(ReactDOM.findDOMNode(this.refs.list)).paddingLeft) +
-      parseFloat(getComputedStyle(ReactDOM.findDOMNode(this.refs.list)).paddingRight);
+    var slideList = ReactDOM.findDOMNode(this.refs.list);
+    var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = (this.getWidth(ReactDOM.findDOMNode(this)) - paddings)/props.slidesToShow;
+    var slideWidth = (this.getWidth(ReactDOM.findDOMNode(this)) - this.getPaddings(slideList))/props.slidesToShow;
 
     // pause slider if autoplay is set to false
     if(!props.autoplay)
@@ -68,6 +68,10 @@ var helpers = {
   },
   getWidth: function getWidth(elem) {
     return elem.getBoundingClientRect().width || elem.offsetWidth;
+  },
+  getPaddings: function (elem) {
+    return parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingLeft) +
+      parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingRight);
   },
   adaptHeight: function () {
     if (this.props.adaptiveHeight) {

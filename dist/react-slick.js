@@ -746,9 +746,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var helpers = {
 	  initialize: function initialize(props) {
 	    var slideCount = _react2.default.Children.count(props.children);
-	    var listWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.list));
+	    var slideList = _reactDom2.default.findDOMNode(this.refs.list);
+	    var listWidth = this.getWidth(slideList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = trackWidth / props.slidesToShow;
+	    var slideWidth = trackWidth - this.getPaddings(slideList) / props.slidesToShow;
 
 	    var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -776,10 +777,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // This method has mostly same code as initialize method.
 	    // Refactor it
 	    var slideCount = _react2.default.Children.count(props.children);
-	    var listWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.list));
-	    var paddings = parseFloat(getComputedStyle(_reactDom2.default.findDOMNode(this.refs.list)).paddingLeft) + parseFloat(getComputedStyle(_reactDom2.default.findDOMNode(this.refs.list)).paddingRight);
+	    var slideList = _reactDom2.default.findDOMNode(this.refs.list);
+	    var listWidth = this.getWidth(slideList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = (this.getWidth(_reactDom2.default.findDOMNode(this)) - paddings) / props.slidesToShow;
+	    var slideWidth = (this.getWidth(_reactDom2.default.findDOMNode(this)) - this.getPaddings(slideList)) / props.slidesToShow;
 
 	    // pause slider if autoplay is set to false
 	    if (!props.autoplay) this.pause();
@@ -803,6 +804,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  getWidth: function getWidth(elem) {
 	    return elem.getBoundingClientRect().width || elem.offsetWidth;
+	  },
+	  getPaddings: function getPaddings(elem) {
+	    return parseFloat(getComputedStyle(_reactDom2.default.findDOMNode(elem)).paddingLeft) + parseFloat(getComputedStyle(_reactDom2.default.findDOMNode(elem)).paddingRight);
 	  },
 	  adaptHeight: function adaptHeight() {
 	    if (this.props.adaptiveHeight) {
