@@ -42,7 +42,7 @@ var helpers = {
     var slickList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slickList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = this.getCurrentSlideOf(slickList)/props.slidesToShow;
+    var slideWidth = this.getWidth(this.getCurrentSlideOf(slickList))/props.slidesToShow;
 
     // pause slider if autoplay is set to false
     if(!props.autoplay)
