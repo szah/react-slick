@@ -351,7 +351,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var centerPaddingStyle = null;
 
 	    if (this.props.vertical === false) {
-	      if (this.props.centerMode === true) {
+	      if (this.props.centerMode === true && this.props.centerSingleImg === true) {
+	        centerPaddingStyle = {
+	          padding: '0 calc((100vw - ' + this.getActiveImageWidth() + ') / 2)'
+	        };
+	      } else if (this.props.centerMode === true) {
 	        centerPaddingStyle = {
 	          padding: '0px ' + this.props.centerPadding
 	        };
@@ -823,10 +827,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	  },
-	  getActiveImageHeight: function getActiveImageHeight() {
+	  getCurrentSlide: function getCurrentSlide() {
 	    var selector = '[data-index="' + this.state.currentSlide + '"] img';
 	    var slickList = _reactDom2.default.findDOMNode(this.refs.list);
-	    return slickList.querySelector(selector).offsetHeight;
+	    return slickList.querySelector(selector);
+	  },
+	  getActiveImageHeight: function getActiveImageHeight() {
+	    return this.getCurrentSlide().offsetHeight;
+	  },
+	  getActiveImageWidth: function getActiveImageWidth() {
+	    return this.getCurrentSlide().offsetWidth;
 	  },
 	  slideHandler: function slideHandler(index) {
 	    var _this = this;

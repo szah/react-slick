@@ -82,10 +82,16 @@ var helpers = {
       }
     }
   },
-  getActiveImageHeight: function () {
+  getCurrentSlide: function () {
     var selector = '[data-index="' + this.state.currentSlide +'"] img';
     var slickList = ReactDOM.findDOMNode(this.refs.list);
-    return slickList.querySelector(selector).offsetHeight;
+    return slickList.querySelector(selector);
+  },
+  getActiveImageHeight: function () {
+    return this.getCurrentSlide().offsetHeight;
+  },
+  getActiveImageWidth: function () {
+    return this.getCurrentSlide().offsetWidth;
   },
   slideHandler: function (index) {
     // Functionality of animateSlide and postSlide is merged into this function
