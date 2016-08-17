@@ -81,9 +81,6 @@ export var InnerSlider = React.createClass({
     })
   },
   render: function () {
-    if (!process.browser) {
-      this.componentDidMount();
-    }
     var className = classnames('slick-initialized', 'slick-slider', this.props.className);
 
     var trackProps = {
@@ -92,6 +89,7 @@ export var InnerSlider = React.createClass({
       speed: this.props.speed,
       infinite: this.props.infinite,
       centerMode: this.props.centerMode,
+      focusOnSelect: this.props.focusOnSelect ? this.selectHandler : () => {},
       currentSlide: this.state.currentSlide,
       lazyLoad: this.props.lazyLoad,
       lazyLoadedList: this.state.lazyLoadedList,
