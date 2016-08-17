@@ -322,7 +322,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        slidesToShow: this.props.slidesToShow,
 	        currentSlide: this.state.currentSlide,
 	        slidesToScroll: this.props.slidesToScroll,
-	        clickHandler: this.changeSlide
+	        clickHandler: this.changeSlide,
+	        imgHeight: this.getActiveImageHeight(),
+	        dotsTopOffset: this.props.dotsTopOffset || 0
 	      };
 
 	      dots = _react2.default.createElement(_dots.Dots, dotProps);
@@ -820,6 +822,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        slickList.style.height = slickList.querySelector(selector).offsetHeight + 'px';
 	      }
 	    }
+	  },
+	  getActiveImageHeight: function getActiveImageHeight() {
+	    var selector = '[data-index="' + this.state.currentSlide + '"] img';
+	    var slickList = _reactDom2.default.findDOMNode(this.refs.list);
+	    return slickList.querySelector(selector).offsetHeight;
 	  },
 	  slideHandler: function slideHandler(index) {
 	    var _this = this;
@@ -1730,7 +1737,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return _react2.default.createElement(
 	      'ul',
-	      { className: this.props.dotsClass, style: { display: 'block' } },
+	      { className: this.props.dotsClass, style: { display: 'block', top: this.props.imgHeight } },
 	      dots
 	    );
 	  }

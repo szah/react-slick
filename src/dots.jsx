@@ -51,7 +51,7 @@ export var Dots = React.createClass({
     });
 
     return (
-      <ul className={this.props.dotsClass} style={{display: 'block'}}>
+      <ul className={this.props.dotsClass} style={{display: 'block', top: this.props.imgHeight}}>
         {dots}
       </ul>
     );
