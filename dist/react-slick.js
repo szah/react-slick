@@ -300,7 +300,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      speed: this.props.speed,
 	      infinite: this.props.infinite,
 	      centerMode: this.props.centerMode,
-	      focusOnSelect: this.props.focusOnSelect ? this.selectHandler : function () {},
 	      currentSlide: this.state.currentSlide,
 	      lazyLoad: this.props.lazyLoad,
 	      lazyLoadedList: this.state.lazyLoadedList,
@@ -309,7 +308,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      slidesToShow: this.props.slidesToShow,
 	      slideCount: this.state.slideCount,
 	      trackStyle: this.state.trackStyle,
-	      variableWidth: this.props.variableWidth
+	      variableWidth: this.props.variableWidth,
+	      slidesToScroll: this.props.slidesToScroll,
+	      focusOnSelect: this.props.focusOnSelect ? this.selectHandler : function () {}
 	    };
 
 	    var dots;
