@@ -12,7 +12,7 @@ var helpers = {
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = trackWidth/props.slidesToShow - this.getPaddings(slideList);
+    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
 
     var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -45,7 +45,7 @@ var helpers = {
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = (this.getWidth(ReactDOM.findDOMNode(this)) - this.getPaddings(slideList))/props.slidesToShow;
+    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
 
     // pause slider if autoplay is set to false
     if(!props.autoplay)

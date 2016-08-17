@@ -353,7 +353,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this.props.vertical === false) {
 	      if (this.props.centerMode === true && this.props.centerSingleImg === true) {
 	        centerPaddingStyle = {
-	          padding: '0 calc((100vw - ' + this.state.activeSlideImageWidth + ') / 2)'
+	          padding: '0 calc((100vw - ' + this.state.activeSlideImageWidth + 'px) / 2)'
 	        };
 	      } else if (this.props.centerMode === true) {
 	        centerPaddingStyle = {
@@ -759,7 +759,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var slideList = _reactDom2.default.findDOMNode(this.refs.list);
 	    var listWidth = this.getWidth(slideList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = trackWidth / props.slidesToShow - this.getPaddings(slideList);
+	    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
 
 	    var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -792,7 +792,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var slideList = _reactDom2.default.findDOMNode(this.refs.list);
 	    var listWidth = this.getWidth(slideList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = (this.getWidth(_reactDom2.default.findDOMNode(this)) - this.getPaddings(slideList)) / props.slidesToShow;
+	    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
 
 	    // pause slider if autoplay is set to false
 	    if (!props.autoplay) this.pause();
@@ -1401,7 +1401,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    edgeDragged: false,
 	    swiped: false, // used by swipeEvent. differentites between touch and swipe.
 	    trackStyle: {},
-	    trackWidth: 0
+	    trackWidth: 0,
+	    centerImgPaddings: 0,
+	    centerSingleImg: false,
+	    dotsTopOffset: 0
 
 	    // Removed
 	    // transformsEnabled: false,
