@@ -323,7 +323,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        currentSlide: this.state.currentSlide,
 	        slidesToScroll: this.props.slidesToScroll,
 	        clickHandler: this.changeSlide,
-	        imgHeight: this.getActiveImageHeight(),
+	        imgHeight: this.state.activeSlideImageHeight,
 	        dotsTopOffset: this.props.dotsTopOffset || 0
 	      };
 
@@ -353,7 +353,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this.props.vertical === false) {
 	      if (this.props.centerMode === true && this.props.centerSingleImg === true) {
 	        centerPaddingStyle = {
-	          padding: '0 calc((100vw - ' + this.getActiveImageWidth() + ') / 2)'
+	          padding: '0 calc((100vw - ' + this.state.activeSlideImageWidth + ') / 2)'
 	        };
 	      } else if (this.props.centerMode === true) {
 	        centerPaddingStyle = {
@@ -768,7 +768,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      slideWidth: slideWidth,
 	      listWidth: listWidth,
 	      trackWidth: trackWidth,
-	      currentSlide: currentSlide
+	      currentSlide: currentSlide,
+	      activeSlideImageWidth: this.getActiveImageWidth(),
+	      activeSlideImageHeight: this.getActiveImageHeight()
 	    }, function () {
 
 	      var targetLeft = (0, _trackHelper.getTrackLeft)((0, _objectAssign2.default)({
@@ -799,7 +801,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      slideCount: slideCount,
 	      slideWidth: slideWidth,
 	      listWidth: listWidth,
-	      trackWidth: trackWidth
+	      trackWidth: trackWidth,
+	      activeSlideImageWidth: this.getActiveImageWidth(),
+	      activeSlideImageHeight: this.getActiveImageHeight()
 	    }, function () {
 
 	      var targetLeft = (0, _trackHelper.getTrackLeft)((0, _objectAssign2.default)({
@@ -833,10 +837,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return slickList.querySelector(selector);
 	  },
 	  getActiveImageHeight: function getActiveImageHeight() {
-	    return this.getCurrentSlide().offsetHeight;
+	    if (this.refs.list) {
+	      return this.getCurrentSlide().offsetHeight;
+	    }
+	    return 0;
 	  },
 	  getActiveImageWidth: function getActiveImageWidth() {
-	    return this.getCurrentSlide().offsetWidth;
+	    if (this.refs.list) {
+	      return this.getCurrentSlide().offsetWidth;
+	    }
+	    return 0;
 	  },
 	  slideHandler: function slideHandler(index) {
 	    var _this = this;

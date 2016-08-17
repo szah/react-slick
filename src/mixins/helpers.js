@@ -21,7 +21,9 @@ var helpers = {
       slideWidth: slideWidth,
       listWidth: listWidth,
       trackWidth: trackWidth,
-      currentSlide: currentSlide
+      currentSlide: currentSlide,
+      activeSlideImageWidth: this.getActiveImageWidth(),
+      activeSlideImageHeight: this.getActiveImageHeight()
     }, function () {
 
       var targetLeft = getTrackLeft(assign({
@@ -53,7 +55,9 @@ var helpers = {
       slideCount: slideCount,
       slideWidth: slideWidth,
       listWidth: listWidth,
-      trackWidth: trackWidth
+      trackWidth: trackWidth,
+      activeSlideImageWidth: this.getActiveImageWidth(),
+      activeSlideImageHeight: this.getActiveImageHeight()
     }, function () {
 
       var targetLeft = getTrackLeft(assign({
@@ -88,10 +92,16 @@ var helpers = {
     return slickList.querySelector(selector);
   },
   getActiveImageHeight: function () {
-    return this.getCurrentSlide().offsetHeight;
+    if (this.refs.list) {
+      return this.getCurrentSlide().offsetHeight;
+    }
+    return 0;
   },
   getActiveImageWidth: function () {
-    return this.getCurrentSlide().offsetWidth;
+    if (this.refs.list) {
+      return this.getCurrentSlide().offsetWidth;
+    }
+    return 0;
   },
   slideHandler: function (index) {
     // Functionality of animateSlide and postSlide is merged into this function

@@ -112,7 +112,7 @@ export var InnerSlider = React.createClass({
         currentSlide: this.state.currentSlide,
         slidesToScroll: this.props.slidesToScroll,
         clickHandler: this.changeSlide,
-        imgHeight: this.getActiveImageHeight(),
+        imgHeight: this.state.activeSlideImageHeight,
         dotsTopOffset: this.props.dotsTopOffset || 0
       };
 
@@ -142,7 +142,7 @@ export var InnerSlider = React.createClass({
     if (this.props.vertical === false) {
       if (this.props.centerMode === true && this.props.centerSingleImg === true) {
         centerPaddingStyle = {
-          padding: (`0 calc((100vw - ${this.getActiveImageWidth()}) / 2)`)
+          padding: (`0 calc((100vw - ${this.state.activeSlideImageWidth}) / 2)`)
         };
       } else if (this.props.centerMode === true) {
         centerPaddingStyle = {
