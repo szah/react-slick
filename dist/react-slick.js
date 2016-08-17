@@ -1630,6 +1630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      cssClasses = slickClasses;
 	    }
+	    var centerOffset = Math.floor(spec.slidesToShow / 2);
 
 	    var isActive = index > spec.currentSlide - centerOffset - 1 && index <= spec.currentSlide + centerOffset;
 
