@@ -100,6 +100,7 @@ export var InnerSlider = React.createClass({
       variableWidth: this.props.variableWidth,
       slidesToScroll: this.props.slidesToScroll,
       focusOnSelect: this.props.focusOnSelect ? this.selectHandler : () => {},
+      activeSlideClickHandler: this.props.activeSlideClickHandler ? this.props.activeSlideClickHandler : () => {}
     };
 
     var dots;

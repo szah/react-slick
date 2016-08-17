@@ -310,7 +310,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      trackStyle: this.state.trackStyle,
 	      variableWidth: this.props.variableWidth,
 	      slidesToScroll: this.props.slidesToScroll,
-	      focusOnSelect: this.props.focusOnSelect ? this.selectHandler : function () {}
+	      focusOnSelect: this.props.focusOnSelect ? this.selectHandler : function () {},
+	      activeSlideClickHandler: this.props.activeSlideClickHandler ? this.props.activeSlideClickHandler : function () {}
 	    };
 
 	    var dots;
@@ -1630,12 +1631,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      cssClasses = slickClasses;
 	    }
 
+	    var isActive = index > spec.currentSlide - centerOffset - 1 && index <= spec.currentSlide + centerOffset;
+
 	    slides.push(_react2.default.cloneElement(child, {
 	      key: 'original' + getKey(child, index),
 	      'data-index': index,
 	      className: cssClasses,
 	      style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle),
-	      onClick: spec.focusOnSelect.bind(null, childOnClickOptions)
+	      onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
 	    }));
 
 	    // variableWidth doesn't wrap properly.
@@ -1649,7 +1652,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          'data-index': key,
 	          className: cssClasses,
 	          style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle),
-	          onClick: spec.focusOnSelect.bind(null, childOnClickOptions)
+	          onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
 	        }));
 	      }
 
@@ -1660,7 +1663,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          'data-index': key,
 	          className: cssClasses,
 	          style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle),
-	          onClick: spec.focusOnSelect.bind(null, childOnClickOptions)
+	          onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
 	        }));
 	      }
 	    }

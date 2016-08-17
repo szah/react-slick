@@ -86,12 +86,14 @@ var renderSlides = spec => {
         cssClasses = slickClasses;
     }
 
+    var isActive = ((index > spec.currentSlide - centerOffset - 1) && (index <= spec.currentSlide + centerOffset));
+
     slides.push(React.cloneElement(child, {
       key: 'original' + getKey(child, index),
       'data-index': index,
       className: cssClasses,
       style: assign({}, child.props.style || {}, childStyle),
-      onClick: spec.focusOnSelect.bind(null, childOnClickOptions)
+      onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
     }));
 
     // variableWidth doesn't wrap properly.
@@ -105,7 +107,7 @@ var renderSlides = spec => {
           'data-index': key,
           className: cssClasses,
           style: assign({}, child.props.style || {}, childStyle),
-          onClick: spec.focusOnSelect.bind(null, childOnClickOptions)
+          onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
         }));
       }
 
@@ -116,7 +118,7 @@ var renderSlides = spec => {
           'data-index': key,
           className: cssClasses,
           style: assign({}, child.props.style || {}, childStyle),
-          onClick: spec.focusOnSelect.bind(null, childOnClickOptions)
+          onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
         }));
       }
     }
