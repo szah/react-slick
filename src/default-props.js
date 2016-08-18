@@ -40,7 +40,10 @@ var defaultProps = {
     swipeEvent: null,
     // nextArrow, prevArrow are react componets
     nextArrow: null,
-    prevArrow: null
+    prevArrow: null,
+    centerImgPaddings: 0,
+    centerSingleImg: false,
+    dotsTopOffset: 0
 };
 
 module.exports = defaultProps;

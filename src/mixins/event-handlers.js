@@ -6,6 +6,7 @@ import assign from 'object-assign';
 var EventHandlers = {
   // Event handler for previous and next
   changeSlide: function (options) {
+    this.pause();
     var indexOffset, previousInt, slideOffset, unevenOffset, targetSlide;
     const {slidesToScroll, slidesToShow} = this.props
     const {slideCount, currentSlide} = this.state

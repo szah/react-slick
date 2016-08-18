@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import ReactTransitionEvents from 'react/lib/ReactTransitionEvents';
 import {getTrackCSS, getTrackLeft, getTrackAnimateCSS} from './trackHelper';
 import assign from 'object-assign';
+import debounce from 'throttle-debounce/debounce';
 
 var helpers = {
   initialize: function (props) {
@@ -103,7 +104,7 @@ var helpers = {
     }
     return 0;
   },
-  slideHandler: function (index) {
+  slideHandler: debounce(this.props.speed, function (index) {
     // Functionality of animateSlide and postSlide is merged into this function
     // console.log('slideHandler', index);
     var targetSlide, currentSlide;
@@ -256,7 +257,7 @@ var helpers = {
     }
 
     this.autoPlay();
-  },
+  }.bind(this)),
   swipeDirection: function (touchObject) {
     var xDist, yDist, r, swipeAngle;
 
