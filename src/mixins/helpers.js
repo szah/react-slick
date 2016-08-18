@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 import ReactTransitionEvents from 'react/lib/ReactTransitionEvents';
 import {getTrackCSS, getTrackLeft, getTrackAnimateCSS} from './trackHelper';
 import assign from 'object-assign';
-import debounce from 'throttle-debounce/debounce';
 
 var helpers = {
   initialize: function (props) {
@@ -104,7 +103,7 @@ var helpers = {
     }
     return 0;
   },
-  slideHandler: debounce(this.props.speed, function (index) {
+  slideHandler: function (index) {
     // Functionality of animateSlide and postSlide is merged into this function
     // console.log('slideHandler', index);
     var targetSlide, currentSlide;
@@ -114,50 +113,7 @@ var helpers = {
     if (this.props.waitForAnimate && this.state.animating) {
       return;
     }
-
-    if (this.props.fade) {
-      currentSlide = this.state.currentSlide;
-
-      //  Shifting targetSlide back into the range
-      if (index < 0) {
-        targetSlide = index + this.state.slideCount;
-      } else if (index >= this.state.slideCount) {
-        targetSlide = index - this.state.slideCount;
-      } else {
-        targetSlide = index;
-      }
-
-      if (this.props.lazyLoad && this.state.lazyLoadedList.indexOf(targetSlide) < 0) {
-        this.setState({
-          lazyLoadedList: this.state.lazyLoadedList.concat(targetSlide)
-        });
-      }
-
-      callback = () => {
-        this.setState({
-          animating: false
-        });
-        if (this.props.afterChange) {
-          this.props.afterChange(targetSlide);
-        }
-        ReactTransitionEvents.removeEndEventListener(ReactDOM.findDOMNode(this.refs.track).children[currentSlide], callback);
-      };
-
-      this.setState({
-        animating: true,
-        currentSlide: targetSlide
-      }, function () {
-        ReactTransitionEvents.addEndEventListener(ReactDOM.findDOMNode(this.refs.track).children[currentSlide], callback);
-      });
-
-      if (this.props.beforeChange) {
-        this.props.beforeChange(this.state.currentSlide, targetSlide);
-      }
-
-      this.autoPlay();
-      return;
-    }
-
+    this.pause();
     targetSlide = index;
     if (targetSlide < 0) {
       if(this.props.infinite === false) {
@@ -239,13 +195,20 @@ var helpers = {
       };
 
       callback = () => {
+        const timeOffset = +new Date() - this.date;
+        if (timeOffset < this.props.speed - 100) {
+          if (this.props.devMode === true) {
+            console.warn(`react-slick: animation is was interrupted: should be ${this.props.speed}, but was ${timeOffset}`)
+          }
+          return false;
+        }
         this.setState(nextStateChanges);
         if (this.props.afterChange) {
           this.props.afterChange(currentSlide);
         }
         ReactTransitionEvents.removeEndEventListener(ReactDOM.findDOMNode(this.refs.track), callback);
       };
-
+      this.date = +new Date();
       this.setState({
         animating: true,
         currentSlide: currentSlide,
@@ -257,7 +220,7 @@ var helpers = {
     }
 
     this.autoPlay();
-  }.bind(this)),
+  },
   swipeDirection: function (touchObject) {
     var xDist, yDist, r, swipeAngle;
 
