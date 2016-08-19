@@ -162,7 +162,7 @@ export var InnerSlider = React.createClass({
       <div className={className} onMouseEnter={this.onInnerSliderEnter} onMouseLeave={this.onInnerSliderLeave}>
         <div
           ref='list'
-          className="slick-list"
+          className={`slick-list ${this.state.isMounted ? '' : 'unmounted'}`}
           style={centerPaddingStyle}
           onMouseDown={this.swipeStart}
           onMouseMove={this.state.dragging ? this.swipeMove: null}

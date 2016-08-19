@@ -23,6 +23,7 @@ var helpers = {
       listWidth: listWidth,
       trackWidth: trackWidth,
       currentSlide: currentSlide,
+      isMounted: true,
       activeSlideImageWidth: this.getActiveImageWidth(),
       activeSlideImageHeight: this.getActiveImageHeight()
     }, function () {
@@ -34,7 +35,9 @@ var helpers = {
       // getCSS function needs previously set state
       var trackStyle = getTrackCSS(assign({left: targetLeft}, props, this.state));
 
-      this.setState({trackStyle: trackStyle});
+      this.setState({
+        trackStyle: trackStyle
+      });
 
       this.autoPlay(); // once we're set up, trigger the initial autoplay.
     });
@@ -80,7 +83,7 @@ var helpers = {
   },
   adaptHeight: function () {
     if (this.getActiveImageHeight() === 0) {
-      return delay(this.adaptHeight.bind(this), 300);
+      return delay(this.adaptHeight, 300);
     }
     if (this.props.adaptiveHeight) {
       var selector = '[data-index="' + this.state.currentSlide +'"]';
