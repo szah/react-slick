@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import ReactTransitionEvents from 'react/lib/ReactTransitionEvents';
 import {getTrackCSS, getTrackLeft, getTrackAnimateCSS} from './trackHelper';
 import assign from 'object-assign';
+import delay from 'lodash.delay';
 
 var helpers = {
   initialize: function (props) {
@@ -78,6 +79,9 @@ var helpers = {
       parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingRight);
   },
   adaptHeight: function () {
+    if (this.getActiveImageHeight() === 0) {
+      return delay(this.adaptHeight.bind(this), 300);
+    }
     if (this.props.adaptiveHeight) {
       var selector = '[data-index="' + this.state.currentSlide +'"]';
       if (this.refs.list) {
