@@ -41,8 +41,10 @@ export var InnerSlider = React.createClass({
   },
   componentDidMount: function () {
     // Hack for autoplay -- Inspect Later
-    this.initialize(this.props);
-    this.adaptHeight();
+    this.onImageLoad(() => {
+      this.initialize(this.props);
+      this.adaptHeight();
+    });
     if (window.addEventListener) {
       window.addEventListener('resize', this.onWindowResized);
     } else {
@@ -162,7 +164,7 @@ export var InnerSlider = React.createClass({
       <div className={className} onMouseEnter={this.onInnerSliderEnter} onMouseLeave={this.onInnerSliderLeave}>
         <div
           ref='list'
-          className={`slick-list ${this.state.isMounted ? '' : 'unmounted'}`}
+          className={`slick-list ${this.state._isMounted ? '' : 'unmounted'}`}
           style={centerPaddingStyle}
           onMouseDown={this.swipeStart}
           onMouseMove={this.state.dragging ? this.swipeMove: null}

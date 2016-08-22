@@ -7,6 +7,9 @@ import {getTrackCSS, getTrackLeft, getTrackAnimateCSS} from './trackHelper';
 import assign from 'object-assign';
 import delay from 'lodash.delay';
 
+const nodeListToArray = nodeList => Array.prototype.slice.call(nodeList);
+const getNestedImages = containerElem => ReactDOM.findDOMNode(containerElem).querySelectorAll('img');
+
 var helpers = {
   initialize: function (props) {
     var slideCount = React.Children.count(props.children);
@@ -23,7 +26,7 @@ var helpers = {
       listWidth: listWidth,
       trackWidth: trackWidth,
       currentSlide: currentSlide,
-      isMounted: true,
+      _isMounted: true,
       activeSlideImageWidth: this.getActiveImageWidth(),
       activeSlideImageHeight: this.getActiveImageHeight()
     }, function () {
@@ -81,9 +84,19 @@ var helpers = {
     return parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingLeft) +
       parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingRight);
   },
+  isImagesLoaded(containerElem) {
+    return nodeListToArray(getNestedImages(containerElem)).every(el => el.complete);
+  },
+  onImageLoad: function (callback) {
+    if (!this.isImagesLoaded(this)) {
+      return delay(this.onImageLoad.bind(this, callback), 300);
+    }
+
+    return callback();
+  },
   adaptHeight: function () {
     if (this.getActiveImageHeight() === 0) {
-      return delay(this.adaptHeight, 300);
+      return delay(this.adaptHeight, 150);
     }
     if (this.props.adaptiveHeight) {
       var selector = '[data-index="' + this.state.currentSlide +'"]';
@@ -93,20 +106,20 @@ var helpers = {
       }
     }
   },
-  getCurrentSlide: function () {
+  getCurrentSlideImg: function () {
     var selector = '[data-index="' + this.state.currentSlide +'"] img';
     var slickList = ReactDOM.findDOMNode(this.refs.list);
     return slickList.querySelector(selector);
   },
   getActiveImageHeight: function () {
     if (this.refs.list) {
-      return this.getCurrentSlide().offsetHeight;
+      return this.getCurrentSlideImg().offsetHeight;
     }
     return 0;
   },
   getActiveImageWidth: function () {
     if (this.refs.list) {
-      return this.getCurrentSlide().offsetWidth;
+      return this.getCurrentSlideImg().offsetWidth;
     }
     return 0;
   },
