@@ -6,6 +6,7 @@ import HelpersMixin from './mixins/helpers';
 import initialState from './initial-state';
 import defaultProps from './default-props';
 import classnames from 'classnames';
+import delay from 'lodash.delay';
 
 import {Track} from './track';
 import {Dots} from './dots';
@@ -39,11 +40,18 @@ export var InnerSlider = React.createClass({
       });
     }
   },
+  _init: function () {
+    this.initialize(this.props);
+    this.adaptHeight();
+  },
   componentDidMount: function () {
     // Hack for autoplay -- Inspect Later
     this.onImageLoad(() => {
-      this.initialize(this.props);
-      this.adaptHeight();
+      if (this.activeSlideImageHeight === 0) {
+        delay(this._init.bind(this), 400);
+      }
+
+      this._init();
     });
     if (window.addEventListener) {
       window.addEventListener('resize', this.onWindowResized);
