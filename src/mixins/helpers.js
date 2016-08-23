@@ -12,6 +12,9 @@ const getNestedImages = containerElem => ReactDOM.findDOMNode(containerElem).que
 
 var helpers = {
   initialize: function (props) {
+    if (this.getActiveImageWidth() === 0) {
+      delay(this.update.bind(this, props), 500);
+    }
     var slideCount = React.Children.count(props.children);
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
