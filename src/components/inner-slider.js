@@ -1,36 +1,13 @@
 import React from 'react';
-import EventHandlersMixin from './mixins/event-handlers';
-import HelpersMixin from './mixins/helpers';
 import initialState from './initial-state';
 import defaultProps from './default-props';
 import classnames from 'classnames';
 
-import { Track } from './track';
-import { Dots } from './dots';
-import { PrevArrow, NextArrow } from './arrows';
+// import { Track } from './track';
+// import { Dots } from './dots';
+// import { PrevArrow, NextArrow } from './arrows';
 
-export var InnerSlider = React.createClass({
-  mixins: [HelpersMixin, EventHandlersMixin],
-  getInitialState: function () {
-    return initialState;
-  },
-  getDefaultProps: function () {
-    return defaultProps;
-  },
-  componentWillMount: function () {
-    var lazyLoadedList = [];
-    for (var i = 0; i < React.Children.count(this.props.children); i++) {
-      if (i >= this.state.currentSlide && i < this.state.currentSlide + this.props.slidesToShow) {
-        lazyLoadedList.push(i);
-      }
-    }
-
-    if (this.props.lazyLoad && this.state.lazyLoadedList.length === 0) {
-      this.setState({
-        lazyLoadedList: lazyLoadedList
-      });
-    }
-  },
+const InnerSlider = React.createClass({
   componentDidMount: function componentDidMount() {
     // Hack for autoplay -- Inspect Later
     this.initialize(this.props);
@@ -54,9 +31,9 @@ export var InnerSlider = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     if (this.props.slickGoTo != nextProps.slickGoTo) {
       this.changeSlide({
-          message: 'index',
-          index: nextProps.slickGoTo,
-          currentSlide: this.state.currentSlide
+        message: 'index',
+        index: nextProps.slickGoTo,
+        currentSlide: this.state.currentSlide
       });
     } else {
       this.update(nextProps);
