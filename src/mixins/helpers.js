@@ -17,7 +17,7 @@ var helpers = {
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth =  + this.props.centerImgPaddings * 2;
+    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
 
     var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
