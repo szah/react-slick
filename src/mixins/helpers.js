@@ -121,6 +121,11 @@ var helpers = {
       }
     }
   },
+  getCurrentSlide: function () {
+    var selector = '[data-index="' + this.state.currentSlide +'"]';
+    var slickList = ReactDOM.findDOMNode(this.refs.list);
+    return slickList.querySelector(selector);
+  },
   getCurrentSlideImg: function () {
     var selector = '[data-index="' + this.state.currentSlide +'"] img';
     var slickList = ReactDOM.findDOMNode(this.refs.list);
@@ -128,13 +133,17 @@ var helpers = {
   },
   getActiveImageHeight: function () {
     if (this.refs.list) {
-      return this.getCurrentSlideImg().offsetHeight || this.getCurrentSlideImg().naturalHeight;
+      return this.getCurrentSlideImg().getBoundingClientRect().height ||
+        this.getCurrentSlideImg().naturalHeight ||
+        this.getCurrentSlide().getBoundingClientRect().height;
     }
     return 0;
   },
   getActiveImageWidth: function () {
     if (this.refs.list) {
-      return this.getCurrentSlideImg().offsetWidth || this.getCurrentSlideImg().naturalWidth;
+      return this.getCurrentSlideImg().getBoundingClientRect().width ||
+        this.getCurrentSlideImg().naturalWidth ||
+        this.getCurrentSlide().getBoundingClientRect().width;
     }
     return 0;
   },
