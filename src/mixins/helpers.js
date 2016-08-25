@@ -17,7 +17,7 @@ var helpers = {
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
+    var slideWidth =  + this.props.centerImgPaddings * 2;
 
     var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -128,13 +128,13 @@ var helpers = {
   },
   getActiveImageHeight: function () {
     if (this.refs.list) {
-      return this.getCurrentSlideImg().offsetHeight;
+      return this.getCurrentSlideImg().offsetHeight || this.getCurrentSlideImg().naturalHeight;
     }
     return 0;
   },
   getActiveImageWidth: function () {
     if (this.refs.list) {
-      return this.getCurrentSlideImg().offsetWidth;
+      return this.getCurrentSlideImg().offsetWidth || this.getCurrentSlideImg().naturalWidth;
     }
     return 0;
   },
