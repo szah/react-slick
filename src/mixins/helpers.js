@@ -11,10 +11,8 @@ const nodeListToArray = nodeList => Array.prototype.slice.call(nodeList);
 const getNestedImages = containerElem => ReactDOM.findDOMNode(containerElem).querySelectorAll('img');
 
 var helpers = {
+  _loadedImgCount: 0,
   initialize: function (props) {
-    if (this.getActiveImageWidth() === 0) {
-      delay(this.update.bind(this, props), 500);
-    }
     var slideCount = React.Children.count(props.children);
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
@@ -87,15 +85,29 @@ var helpers = {
     return parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingLeft) +
       parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingRight);
   },
-  isImagesLoaded(containerElem) {
-    return nodeListToArray(getNestedImages(containerElem)).every(el => el.complete);
-  },
   onImageLoad: function (callback) {
-    if (!this.isImagesLoaded(this)) {
-      return delay(this.onImageLoad.bind(this, callback), 300);
-    }
+    this._loadedImgCount = 0;
+    const imgEls = nodeListToArray(getNestedImages(this));
+    const loadedImages = imgEls.filter(el => el.complete && el.naturalWidth !== 0 && el.naturalHeight !== 0);
 
-    return callback();
+    if (loadedImages.length < imgEls.length) {
+      imgEls.forEach(el => {
+        el.onload = () => {
+          this._loadedImgCount += 1;
+          if (this._loadedImgCount === (imgEls.length - loadedImages.length)) {
+            callback();
+            this.setState({
+              isImagesLoaded: true
+            })
+          }
+        }
+      });
+    } else {
+      callback();
+      this.setState({
+        isImagesLoaded: true
+      })
+    }
   },
   adaptHeight: function () {
     if (this.getActiveImageHeight() === 0) {

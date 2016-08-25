@@ -6,7 +6,6 @@ import HelpersMixin from './mixins/helpers';
 import initialState from './initial-state';
 import defaultProps from './default-props';
 import classnames from 'classnames';
-import delay from 'lodash.delay';
 
 import {Track} from './track';
 import {Dots} from './dots';
@@ -47,10 +46,6 @@ export var InnerSlider = React.createClass({
   componentDidMount: function () {
     // Hack for autoplay -- Inspect Later
     this.onImageLoad(() => {
-      if (this.activeSlideImageHeight === 0) {
-        delay(this._init.bind(this), 400);
-      }
-
       this._init();
     });
     if (window.addEventListener) {
@@ -84,11 +79,13 @@ export var InnerSlider = React.createClass({
     this.adaptHeight();
   },
   onWindowResized: function () {
-    this.update(this.props);
-    // animating state should be cleared while resizing, otherwise autoplay stops working
-    this.setState({
-      animating: false 
-    })
+    if (this.state.isImagesLoaded) {
+      this.update(this.props);
+      // animating state should be cleared while resizing, otherwise autoplay stops working
+      this.setState({
+        animating: false
+      })
+    }
   },
   render: function () {
     var className = classnames('slick-initialized', 'slick-slider', this.props.className);

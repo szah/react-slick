@@ -29,7 +29,8 @@ var initialState = {
     swiped: false, // used by swipeEvent. differentites between touch and swipe.
     trackStyle: {},
     trackWidth: 0,
-    _isMounted: false
+    _isMounted: false,
+    isImagesLoaded: false
 
     // Removed
     // transformsEnabled: false,
