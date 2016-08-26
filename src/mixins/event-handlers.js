@@ -1,15 +1,17 @@
 'use strict';
 import {getTrackCSS, getTrackLeft, getTrackAnimateCSS} from './trackHelper';
-import helpers from './helpers';
 import assign from 'object-assign';
+
+const increment = (val, step) => val + step;
+const decrement = (val, step) => val - step;
 
 var EventHandlers = {
   // Event handler for previous and next
   changeSlide: function (options) {
     this.pause();
     var indexOffset, previousInt, slideOffset, unevenOffset, targetSlide;
-    const {slidesToScroll, slidesToShow} = this.props
-    const {slideCount, currentSlide} = this.state
+    const {slidesToScroll, slidesToShow} = this.props;
+    const {slideCount, currentSlide} = this.state;
     unevenOffset = (slideCount % slidesToScroll !== 0);
     indexOffset = unevenOffset ? 0 : (slideCount - currentSlide) % slidesToScroll;
 
@@ -23,11 +25,22 @@ var EventHandlers = {
     } else if (options.message === 'next') {
       slideOffset = (indexOffset === 0) ? slidesToScroll : indexOffset;
       targetSlide = currentSlide + slideOffset;
-    } else if (options.message === 'dots' || options.message === 'children') {
+    } else if (options.message === 'dots') {
       // Click on dots
       targetSlide = options.index * options.slidesToScroll;
       if (targetSlide === options.currentSlide) {
         return;
+      }
+    } else if (options.message === 'children') {
+      const lastVisibleSlideIndex = options.currentSlide + this.props.slidesToShow - 1;
+      const firstVisibleSlideIndex = options.currentSlide;
+
+      if (options.index > lastVisibleSlideIndex) {
+        targetSlide = increment(options.currentSlide, options.slidesToScroll);
+      } else if (options.index < firstVisibleSlideIndex) {
+        targetSlide = decrement(options.currentSlide, options.slidesToScroll);
+      } else {
+        return false;
       }
     } else if (options.message === 'index') {
       targetSlide = options.index;

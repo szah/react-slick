@@ -24,11 +24,16 @@ var getSlideClasses = (spec) => {
   } else {
     slickActive = (spec.currentSlide <= index) && (index < spec.currentSlide + spec.slidesToShow);
   }
+  const firstVisibleSlide = index === spec.currentSlide;
+  const lastVisibleSlide = (index === (spec.currentSlide + spec.slidesToShow - 1));
+
   return classnames({
     'slick-slide': true,
     'slick-active': slickActive,
     'slick-center': slickCenter,
-    'slick-cloned': slickCloned
+    'slick-cloned': slickCloned,
+    'slick-first-visible-slide': firstVisibleSlide,
+    'slick-last-visible-slide': lastVisibleSlide
   });
 };
 
@@ -85,9 +90,11 @@ var renderSlides = spec => {
     } else {
         cssClasses = slickClasses;
     }
-    var centerOffset = Math.floor(spec.slidesToShow / 2);
 
-    var isActive = ((index > spec.currentSlide - centerOffset - 1) && (index <= spec.currentSlide + centerOffset));
+    const lastVisibleSlide = spec.currentSlide + spec.slidesToShow - 1;
+    const firstVisibleSlide = spec.currentSlide;
+
+    const isActive = index <= lastVisibleSlide && index >= firstVisibleSlide;
 
     slides.push(React.cloneElement(child, {
       key: 'original' + getKey(child, index),

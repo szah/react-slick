@@ -17,7 +17,12 @@ var helpers = {
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
+    var slideWidth = 0;
+    if (props.centerMode && props.centerSingleImg) {
+      slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
+    } else {
+      slideWidth = trackWidth / props.slidesToShow;
+    }
 
     var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -40,7 +45,8 @@ var helpers = {
       var trackStyle = getTrackCSS(assign({left: targetLeft}, props, this.state));
 
       this.setState({
-        trackStyle: trackStyle
+        trackStyle: trackStyle,
+        activeSlideImageHeight: this.getActiveImageHeight()
       });
 
       this.autoPlay(); // once we're set up, trigger the initial autoplay.
@@ -53,7 +59,15 @@ var helpers = {
     var slideList = ReactDOM.findDOMNode(this.refs.list);
     var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
+    var slideWidth = 0;
+    if (props.centerMode && props.centerSingleImg) {
+      slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
+    } else if (typeof props.slideListPadding !== 'undefined') {
+      slideWidth = (this.getWidth(ReactDOM.findDOMNode(slideList)) - props.slideListPadding * 2)/props.slidesToShow;
+    } else {
+      slideWidth = this.getWidth(ReactDOM.findDOMNode(slideList))/props.slidesToShow;
+    }
+
 
     // pause slider if autoplay is set to false
     if(!props.autoplay)

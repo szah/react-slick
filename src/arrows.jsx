@@ -22,7 +22,7 @@ export var PrevArrow = React.createClass({
       key: '0',
       'data-role': 'none',
       className: classnames(prevClasses),
-      style: {display: 'block'},
+      style: {display: 'block', height: this.props.height},
       onClick: prevHandler
     };
     var prevArrow;
@@ -69,8 +69,8 @@ export var NextArrow = React.createClass({
       key: '1',
       'data-role': 'none',
       className: classnames(nextClasses),
-      style: {display: 'block'},
-      onClick: nextHandler
+      style: {display: 'block', height: this.props.height},
+      onClick: nextHandler,
     };
 
     var nextArrow;

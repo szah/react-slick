@@ -137,7 +137,8 @@ export var InnerSlider = React.createClass({
       slidesToShow: this.props.slidesToShow,
       prevArrow: this.props.prevArrow,
       nextArrow: this.props.nextArrow,
-      clickHandler: this.changeSlide
+      clickHandler: this.changeSlide,
+      height: this.state.activeSlideImageHeight
     };
 
     if (this.props.arrows) {
@@ -156,6 +157,10 @@ export var InnerSlider = React.createClass({
         centerPaddingStyle = {
           padding: ('0px ' + this.props.centerPadding)
         };
+      } else if (typeof this.props.slideListPadding !== 'undefined') {
+        centerPaddingStyle = {
+          padding: `0 ${this.props.slideListPadding}px`
+        }
       }
     } else {
       if (this.props.centerMode === true) {
