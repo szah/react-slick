@@ -45,8 +45,7 @@ var helpers = {
       var trackStyle = getTrackCSS(assign({left: targetLeft}, props, this.state));
 
       this.setState({
-        trackStyle: trackStyle,
-        activeSlideImageHeight: this.getActiveImageHeight()
+        trackStyle: trackStyle
       });
 
       this.autoPlay(); // once we're set up, trigger the initial autoplay.

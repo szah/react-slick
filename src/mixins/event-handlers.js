@@ -69,7 +69,8 @@ var EventHandlers = {
 
   },
   // Focus on selecting a slide (click handler on track)
-  selectHandler: function (options) {
+  selectHandler: function (options, e) {
+    e.preventDefault();
     this.changeSlide(options);
   },
   swipeStart: function (e) {
