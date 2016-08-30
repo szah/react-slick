@@ -124,9 +124,6 @@ var helpers = {
     }
   },
   adaptHeight: function () {
-    if (this.getActiveImageHeight() === 0) {
-      return delay(this.adaptHeight, 150);
-    }
     if (this.props.adaptiveHeight) {
       var selector = '[data-index="' + this.state.currentSlide +'"]';
       if (this.refs.list) {

@@ -34,11 +34,24 @@ var EventHandlers = {
     } else if (options.message === 'children') {
       const lastVisibleSlideIndex = options.currentSlide + this.props.slidesToShow - 1;
       const firstVisibleSlideIndex = options.currentSlide;
+      const maxIndex = slideCount - 1;
 
       if (options.index > lastVisibleSlideIndex) {
-        targetSlide = increment(options.currentSlide, options.slidesToScroll);
+        if (options.currentSlide === 0 && options.index === maxIndex) {
+          targetSlide = maxIndex;
+        } else if (options.index > maxIndex) {
+          targetSlide = 0;
+        } else {
+          targetSlide = increment(options.currentSlide, options.slidesToScroll);
+        }
       } else if (options.index < firstVisibleSlideIndex) {
-        targetSlide = decrement(options.currentSlide, options.slidesToScroll);
+        if (options.index === 0) {
+          targetSlide = 0;
+        } else if (options.index < 0) {
+          targetSlide = maxIndex;
+        } else {
+          targetSlide = decrement(options.currentSlide, options.slidesToScroll);
+        }
       } else {
         return false;
       }
