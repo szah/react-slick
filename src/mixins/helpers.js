@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 import ReactTransitionEvents from 'react/lib/ReactTransitionEvents';
 import {getTrackCSS, getTrackLeft, getTrackAnimateCSS} from './trackHelper';
 import assign from 'object-assign';
-import delay from 'lodash.delay';
 
 const nodeListToArray = nodeList => Array.prototype.slice.call(nodeList);
 const getNestedImages = containerElem => ReactDOM.findDOMNode(containerElem).querySelectorAll('img');
@@ -21,7 +20,7 @@ var helpers = {
     if (props.centerMode && props.centerSingleImg) {
       slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
     } else {
-      slideWidth = listWidth / props.slidesToShow;
+      slideWidth = listWidth - this.getPaddings(slideList) / props.slidesToShow;
     }
 
     var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
@@ -301,9 +300,10 @@ var helpers = {
     }
     var play = () => {
       if (this.state.mounted) {
-        var nextIndex = this.props.rtl ?
+        const maybeTarget = this.state.currentSlide + this.props.slidesToScroll;
+        const nextIndex = this.props.rtl ?
         this.state.currentSlide - this.props.slidesToScroll:
-        this.state.currentSlide + this.props.slidesToScroll;
+          maybeTarget >= this.state.slideCount ? 0 : maybeTarget;
         this.slideHandler(nextIndex);
       }
     };
