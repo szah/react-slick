@@ -71,7 +71,11 @@ var EventHandlers = {
   // Focus on selecting a slide (click handler on track)
   selectHandler: function (options, e) {
     e.preventDefault();
-    this.changeSlide(options);
+    if (typeof this.props.shouldFocus !== 'undefined') {
+      this.props.shouldFocus(e) ? this.changeSlide(options) : false;
+    } else {
+      this.changeSlide(options);
+    }
   },
   swipeStart: function (e) {
     var touches, posX, posY;

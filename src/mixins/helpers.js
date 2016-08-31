@@ -300,10 +300,9 @@ var helpers = {
     }
     var play = () => {
       if (this.state.mounted) {
-        const maybeTarget = this.state.currentSlide + this.props.slidesToScroll;
         const nextIndex = this.props.rtl ?
-        this.state.currentSlide - this.props.slidesToScroll:
-          maybeTarget >= this.state.slideCount ? 0 : maybeTarget;
+          this.state.currentSlide - this.props.slidesToScroll :
+          this.state.currentSlide + this.props.slidesToScroll;
         this.slideHandler(nextIndex);
       }
     };
