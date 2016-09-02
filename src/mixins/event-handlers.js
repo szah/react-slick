@@ -197,12 +197,20 @@ var EventHandlers = {
   },
   onInnerSliderEnter: function (e) {
     if (this.props.autoplay && this.props.pauseOnHover) {
-      this.pause();
+      this.setState({
+        paused: true
+      }, () => {
+        this.pause();
+      });
     }
   },
   onInnerSliderLeave: function (e) {
     if (this.props.autoplay && this.props.pauseOnHover) {
-      this.autoPlay();
+      this.setState({
+        paused: false
+      }, () => {
+        this.autoPlay();
+      });
     }
   }
 };

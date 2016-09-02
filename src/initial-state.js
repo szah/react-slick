@@ -30,6 +30,7 @@ var initialState = {
     trackStyle: {},
     trackWidth: 0,
     _isMounted: false,
+    paused: false,
     isImagesLoaded: false
 
     // Removed

@@ -271,8 +271,9 @@ var helpers = {
       });
 
     }
-
-    this.autoPlay();
+    if (!this.state.paused) {
+      this.autoPlay();
+    }
   },
   swipeDirection: function (touchObject) {
     var xDist, yDist, r, swipeAngle;
