@@ -142,17 +142,18 @@ var helpers = {
   },
   getActiveImageHeight: function () {
     if (this.refs.list) {
-      return this.getCurrentSlideImg().getBoundingClientRect().height ||
-        this.getCurrentSlideImg().naturalHeight ||
-        this.getCurrentSlide().getBoundingClientRect().height;
+      return this.getCurrentSlideImg() && this.getCurrentSlideImg().getBoundingClientRect().height ||
+        this.getCurrentSlideImg() && this.getCurrentSlideImg().naturalHeight ||
+        this.getCurrentSlide() && this.getCurrentSlide().getBoundingClientRect().height;
     }
     return 0;
   },
   getActiveImageWidth: function () {
     if (this.refs.list) {
-      return this.getCurrentSlideImg().getBoundingClientRect().width ||
-        this.getCurrentSlideImg().naturalWidth ||
-        this.getCurrentSlide().getBoundingClientRect().width;
+      return this.getCurrentSlideImg() && this.getCurrentSlideImg().getBoundingClientRect().width ||
+        this.getCurrentSlideImg() && this.getCurrentSlideImg().naturalWidth ||
+        this.getCurrentSlide() && this.getCurrentSlide().getBoundingClientRect().width ||
+          0;
     }
     return 0;
   },
