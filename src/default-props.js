@@ -43,7 +43,8 @@ var defaultProps = {
     prevArrow: null,
     centerImgPaddings: 0,
     centerSingleImg: false,
-    dotsTopOffset: 0
+    dotsTopOffset: 0,
+    dotsBtnClass: ''
 };
 
 module.exports = defaultProps;
