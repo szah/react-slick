@@ -16,6 +16,7 @@ export var Dots = React.createClass({
     // In Autoplay the focus stays on clicked button even after transition
     // to next slide. That only goes away by click somewhere outside
     e.preventDefault();
+    this.props.customClickHandler(options, e);
     this.props.clickHandler(options);
   },
   render: function () {

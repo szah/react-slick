@@ -122,7 +122,8 @@ export var InnerSlider = React.createClass({
         clickHandler: this.changeSlide,
         imgHeight: this.state.activeSlideImageHeight,
         dotsTopOffset: this.props.dotsTopOffset || 0,
-        dotsBtnClass: this.props.dotsBtnClass
+        dotsBtnClass: this.props.dotsBtnClass,
+        customClickHandler: this.props.dotsClickHandler ? this.props.dotsClickHandler : () => {}
       };
 
       dots = (<Dots {...dotProps} />);
