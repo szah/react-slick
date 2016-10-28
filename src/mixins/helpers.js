@@ -6,12 +6,22 @@ import ReactTransitionEvents from 'react/lib/ReactTransitionEvents';
 import {getTrackCSS, getTrackLeft, getTrackAnimateCSS} from './trackHelper';
 import assign from 'object-assign';
 
+const nodeListToArray = nodeList => Array.prototype.slice.call(nodeList);
+const getNestedImages = containerElem => ReactDOM.findDOMNode(containerElem).querySelectorAll('img');
+
 var helpers = {
+  _loadedImgCount: 0,
   initialize: function (props) {
     var slideCount = React.Children.count(props.children);
-    var listWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.list));
+    var slideList = ReactDOM.findDOMNode(this.refs.list);
+    var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = trackWidth/props.slidesToShow;
+    var slideWidth = 0;
+    if (props.centerMode && props.centerSingleImg) {
+      slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
+    } else {
+      slideWidth = (listWidth - this.getPaddings(slideList)) / props.slidesToShow;
+    }
 
     var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -20,7 +30,10 @@ var helpers = {
       slideWidth: slideWidth,
       listWidth: listWidth,
       trackWidth: trackWidth,
-      currentSlide: currentSlide
+      currentSlide: currentSlide,
+      _isMounted: true,
+      activeSlideImageWidth: this.getActiveImageWidth(),
+      activeSlideImageHeight: this.getActiveImageHeight()
     }, function () {
 
       var targetLeft = getTrackLeft(assign({
@@ -30,7 +43,9 @@ var helpers = {
       // getCSS function needs previously set state
       var trackStyle = getTrackCSS(assign({left: targetLeft}, props, this.state));
 
-      this.setState({trackStyle: trackStyle});
+      this.setState({
+        trackStyle: trackStyle
+      });
 
       this.autoPlay(); // once we're set up, trigger the initial autoplay.
     });
@@ -39,10 +54,18 @@ var helpers = {
     // This method has mostly same code as initialize method.
     // Refactor it
     var slideCount = React.Children.count(props.children);
-    var slickList = ReactDOM.findDOMNode(this.refs.list);
-    var listWidth = this.getWidth(slickList);
+    var slideList = ReactDOM.findDOMNode(this.refs.list);
+    var listWidth = this.getWidth(slideList);
     var trackWidth = this.getWidth(ReactDOM.findDOMNode(this.refs.track));
-    var slideWidth = this.getCurrentSlideOf(slickList)/props.slidesToShow;
+    var slideWidth = 0;
+    if (props.centerMode && props.centerSingleImg) {
+      slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
+    } else if (typeof props.slideListPadding !== 'undefined') {
+      slideWidth = (this.getWidth(ReactDOM.findDOMNode(slideList)) - props.slideListPadding * 2)/props.slidesToShow;
+    } else {
+      slideWidth = this.getWidth(ReactDOM.findDOMNode(slideList))/props.slidesToShow;
+    }
+
 
     // pause slider if autoplay is set to false
     if(!props.autoplay)
@@ -52,7 +75,9 @@ var helpers = {
       slideCount: slideCount,
       slideWidth: slideWidth,
       listWidth: listWidth,
-      trackWidth: trackWidth
+      trackWidth: trackWidth,
+      activeSlideImageWidth: this.getActiveImageWidth(),
+      activeSlideImageHeight: this.getActiveImageHeight()
     }, function () {
 
       var targetLeft = getTrackLeft(assign({
@@ -68,15 +93,69 @@ var helpers = {
   getWidth: function getWidth(elem) {
     return elem.getBoundingClientRect().width || elem.offsetWidth;
   },
-  adaptHeight: function () {
-    if (this.props.adaptiveHeight && this.refs.list) {
-      var slickList = ReactDOM.findDOMNode(this.refs.list);
-      slickList.style.height = this.getCurrentSlideOf(slickList).offsetHeight + 'px';
+  getPaddings: function (elem) {
+    return parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingLeft) +
+      parseFloat(getComputedStyle(ReactDOM.findDOMNode(elem)).paddingRight);
+  },
+  onImageLoad: function (callback) {
+    this._loadedImgCount = 0;
+    const imgEls = nodeListToArray(getNestedImages(this));
+    const loadedImages = imgEls.filter(el => el.complete && el.naturalWidth !== 0 && el.naturalHeight !== 0);
+
+    if (loadedImages.length < imgEls.length) {
+      imgEls.forEach(el => {
+        el.onload = () => {
+          this._loadedImgCount += 1;
+          if (this._loadedImgCount === (imgEls.length - loadedImages.length)) {
+            callback();
+            this.setState({
+              isImagesLoaded: true
+            })
+          }
+        }
+      });
+    } else {
+      callback();
+      this.setState({
+        isImagesLoaded: true
+      })
     }
   },
-  getCurrentSlideOf: function (slickList) {
+  adaptHeight: function () {
+    if (this.props.adaptiveHeight) {
+      var selector = '[data-index="' + this.state.currentSlide +'"]';
+      if (this.refs.list) {
+        var slickList = ReactDOM.findDOMNode(this.refs.list);
+        slickList.style.height = slickList.querySelector(selector).offsetHeight + 'px';
+      }
+    }
+  },
+  getCurrentSlide: function () {
     var selector = '[data-index="' + this.state.currentSlide +'"]';
+    var slickList = ReactDOM.findDOMNode(this.refs.list);
     return slickList.querySelector(selector);
+  },
+  getCurrentSlideImg: function () {
+    var selector = '[data-index="' + this.state.currentSlide +'"] img';
+    var slickList = ReactDOM.findDOMNode(this.refs.list);
+    return slickList.querySelector(selector);
+  },
+  getActiveImageHeight: function () {
+    if (this.refs.list) {
+      return this.getCurrentSlideImg() && this.getCurrentSlideImg().getBoundingClientRect().height ||
+        this.getCurrentSlideImg() && this.getCurrentSlideImg().naturalHeight ||
+        this.getCurrentSlide() && this.getCurrentSlide().getBoundingClientRect().height;
+    }
+    return 0;
+  },
+  getActiveImageWidth: function () {
+    if (this.refs.list) {
+      return this.getCurrentSlideImg() && this.getCurrentSlideImg().getBoundingClientRect().width ||
+        this.getCurrentSlideImg() && this.getCurrentSlideImg().naturalWidth ||
+        this.getCurrentSlide() && this.getCurrentSlide().getBoundingClientRect().width ||
+          0;
+    }
+    return 0;
   },
   slideHandler: function (index) {
     // Functionality of animateSlide and postSlide is merged into this function
@@ -88,50 +167,7 @@ var helpers = {
     if (this.props.waitForAnimate && this.state.animating) {
       return;
     }
-
-    if (this.props.fade) {
-      currentSlide = this.state.currentSlide;
-
-      //  Shifting targetSlide back into the range
-      if (index < 0) {
-        targetSlide = index + this.state.slideCount;
-      } else if (index >= this.state.slideCount) {
-        targetSlide = index - this.state.slideCount;
-      } else {
-        targetSlide = index;
-      }
-
-      if (this.props.lazyLoad && this.state.lazyLoadedList.indexOf(targetSlide) < 0) {
-        this.setState({
-          lazyLoadedList: this.state.lazyLoadedList.concat(targetSlide)
-        });
-      }
-
-      callback = () => {
-        this.setState({
-          animating: false
-        });
-        if (this.props.afterChange) {
-          this.props.afterChange(targetSlide);
-        }
-        ReactTransitionEvents.removeEndEventListener(ReactDOM.findDOMNode(this.refs.track).children[currentSlide], callback);
-      };
-
-      this.setState({
-        animating: true,
-        currentSlide: targetSlide
-      }, function () {
-        ReactTransitionEvents.addEndEventListener(ReactDOM.findDOMNode(this.refs.track).children[currentSlide], callback);
-      });
-
-      if (this.props.beforeChange) {
-        this.props.beforeChange(this.state.currentSlide, targetSlide);
-      }
-
-      this.autoPlay();
-      return;
-    }
-
+    this.pause();
     targetSlide = index;
     if (targetSlide < 0) {
       if(this.props.infinite === false) {
@@ -213,13 +249,20 @@ var helpers = {
       };
 
       callback = () => {
+        const timeOffset = +new Date() - this.date;
+        if (timeOffset < this.props.speed - 100) {
+          if (this.props.devMode === true) {
+            console.warn(`react-slick: animation is was interrupted: should be ${this.props.speed}, but was ${timeOffset}`)
+          }
+          return false;
+        }
         this.setState(nextStateChanges);
         if (this.props.afterChange) {
           this.props.afterChange(currentSlide);
         }
         ReactTransitionEvents.removeEndEventListener(ReactDOM.findDOMNode(this.refs.track), callback);
       };
-
+      this.date = +new Date();
       this.setState({
         animating: true,
         currentSlide: currentSlide,
@@ -229,8 +272,9 @@ var helpers = {
       });
 
     }
-
-    this.autoPlay();
+    if (!this.state.paused) {
+      this.autoPlay();
+    }
   },
   swipeDirection: function (touchObject) {
     var xDist, yDist, r, swipeAngle;
@@ -258,9 +302,9 @@ var helpers = {
     }
     var play = () => {
       if (this.state.mounted) {
-        var nextIndex = this.props.rtl ?
-        this.state.currentSlide - this.props.slidesToScroll:
-        this.state.currentSlide + this.props.slidesToScroll;
+        const nextIndex = this.props.rtl ?
+          this.state.currentSlide - this.props.slidesToScroll :
+          this.state.currentSlide + this.props.slidesToScroll;
         this.slideHandler(nextIndex);
       }
     };

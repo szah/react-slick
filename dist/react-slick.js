@@ -308,7 +308,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      slidesToShow: this.props.slidesToShow,
 	      slideCount: this.state.slideCount,
 	      trackStyle: this.state.trackStyle,
-	      variableWidth: this.props.variableWidth
+	      variableWidth: this.props.variableWidth,
+	      slidesToScroll: this.props.slidesToScroll,
+	      focusOnSelect: this.props.focusOnSelect ? this.selectHandler : function () {},
+	      activeSlideClickHandler: this.props.activeSlideClickHandler ? this.props.activeSlideClickHandler : function () {}
 	    };
 
 	    var dots;
@@ -320,7 +323,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        slidesToShow: this.props.slidesToShow,
 	        currentSlide: this.state.currentSlide,
 	        slidesToScroll: this.props.slidesToScroll,
-	        clickHandler: this.changeSlide
+	        clickHandler: this.changeSlide,
+	        imgHeight: this.state.activeSlideImageHeight,
+	        dotsTopOffset: this.props.dotsTopOffset || 0
 	      };
 
 	      dots = _react2.default.createElement(_dots.Dots, dotProps);
@@ -347,7 +352,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var centerPaddingStyle = null;
 
 	    if (this.props.vertical === false) {
-	      if (this.props.centerMode === true) {
+	      if (this.props.centerMode === true && this.props.centerSingleImg === true) {
+	        centerPaddingStyle = {
+	          padding: '0 calc((100vw - ' + this.state.activeSlideImageWidth + 'px) / 2)'
+	        };
+	      } else if (this.props.centerMode === true) {
 	        centerPaddingStyle = {
 	          padding: '0px ' + this.props.centerPadding
 	        };
@@ -434,7 +443,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else if (options.message === 'next') {
 	      slideOffset = indexOffset === 0 ? slidesToScroll : indexOffset;
 	      targetSlide = currentSlide + slideOffset;
-	    } else if (options.message === 'dots') {
+	    } else if (options.message === 'dots' || options.message === 'children') {
 	      // Click on dots
 	      targetSlide = options.index * options.slidesToScroll;
 	      if (targetSlide === options.currentSlide) {
@@ -452,7 +461,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Accessiblity handler for previous and next
 	  keyHandler: function keyHandler(e) {},
 	  // Focus on selecting a slide (click handler on track)
-	  selectHandler: function selectHandler(e) {},
+	  selectHandler: function selectHandler(options) {
+	    this.changeSlide(options);
+	  },
 	  swipeStart: function swipeStart(e) {
 	    var touches, posX, posY;
 
@@ -746,9 +757,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var helpers = {
 	  initialize: function initialize(props) {
 	    var slideCount = _react2.default.Children.count(props.children);
-	    var listWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.list));
+	    var slideList = _reactDom2.default.findDOMNode(this.refs.list);
+	    var listWidth = this.getWidth(slideList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = trackWidth / props.slidesToShow;
+	    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
 
 	    var currentSlide = props.rtl ? slideCount - 1 - props.initialSlide : props.initialSlide;
 
@@ -757,7 +769,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      slideWidth: slideWidth,
 	      listWidth: listWidth,
 	      trackWidth: trackWidth,
-	      currentSlide: currentSlide
+	      currentSlide: currentSlide,
+	      activeSlideImageWidth: this.getActiveImageWidth(),
+	      activeSlideImageHeight: this.getActiveImageHeight()
 	    }, function () {
 
 	      var targetLeft = (0, _trackHelper.getTrackLeft)((0, _objectAssign2.default)({
@@ -776,10 +790,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // This method has mostly same code as initialize method.
 	    // Refactor it
 	    var slideCount = _react2.default.Children.count(props.children);
-	    var slickList = _reactDom2.default.findDOMNode(this.refs.list);
-	    var listWidth = this.getWidth(slickList);
+	    var slideList = _reactDom2.default.findDOMNode(this.refs.list);
+	    var listWidth = this.getWidth(slideList);
 	    var trackWidth = this.getWidth(_reactDom2.default.findDOMNode(this.refs.track));
-	    var slideWidth = this.getCurrentSlideOf(slickList) / props.slidesToShow;
+	    var slideWidth = this.getActiveImageWidth() + this.props.centerImgPaddings * 2;
 
 	    // pause slider if autoplay is set to false
 	    if (!props.autoplay) this.pause();
@@ -788,7 +802,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      slideCount: slideCount,
 	      slideWidth: slideWidth,
 	      listWidth: listWidth,
-	      trackWidth: trackWidth
+	      trackWidth: trackWidth,
+	      activeSlideImageWidth: this.getActiveImageWidth(),
+	      activeSlideImageHeight: this.getActiveImageHeight()
 	    }, function () {
 
 	      var targetLeft = (0, _trackHelper.getTrackLeft)((0, _objectAssign2.default)({
@@ -804,15 +820,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	  getWidth: function getWidth(elem) {
 	    return elem.getBoundingClientRect().width || elem.offsetWidth;
 	  },
+	  getPaddings: function getPaddings(elem) {
+	    return parseFloat(getComputedStyle(_reactDom2.default.findDOMNode(elem)).paddingLeft) + parseFloat(getComputedStyle(_reactDom2.default.findDOMNode(elem)).paddingRight);
+	  },
 	  adaptHeight: function adaptHeight() {
-	    if (this.props.adaptiveHeight && this.refs.list) {
-	      var slickList = _reactDom2.default.findDOMNode(this.refs.list);
-	      slickList.style.height = this.getCurrentSlideOf(slickList).offsetHeight + 'px';
+	    if (this.props.adaptiveHeight) {
+	      var selector = '[data-index="' + this.state.currentSlide + '"]';
+	      if (this.refs.list) {
+	        var slickList = _reactDom2.default.findDOMNode(this.refs.list);
+	        slickList.style.height = slickList.querySelector(selector).offsetHeight + 'px';
+	      }
 	    }
 	  },
-	  getCurrentSlideOf: function getCurrentSlideOf(slickList) {
-	    var selector = '[data-index="' + this.state.currentSlide + '"]';
+	  getCurrentSlide: function getCurrentSlide() {
+	    var selector = '[data-index="' + this.state.currentSlide + '"] img';
+	    var slickList = _reactDom2.default.findDOMNode(this.refs.list);
 	    return slickList.querySelector(selector);
+	  },
+	  getActiveImageHeight: function getActiveImageHeight() {
+	    if (this.refs.list) {
+	      return this.getCurrentSlide().offsetHeight;
+	    }
+	    return 0;
+	  },
+	  getActiveImageWidth: function getActiveImageWidth() {
+	    if (this.refs.list) {
+	      return this.getCurrentSlide().offsetWidth;
+	    }
+	    return 0;
 	  },
 	  slideHandler: function slideHandler(index) {
 	    var _this = this;
@@ -1367,7 +1402,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    edgeDragged: false,
 	    swiped: false, // used by swipeEvent. differentites between touch and swipe.
 	    trackStyle: {},
-	    trackWidth: 0
+	    trackWidth: 0,
+	    centerImgPaddings: 0,
+	    centerSingleImg: false,
+	    dotsTopOffset: 0
 
 	    // Removed
 	    // transformsEnabled: false,
@@ -1571,6 +1609,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var child;
 
 	  _react2.default.Children.forEach(spec.children, function (elem, index) {
+	    var childOnClickOptions = {
+	      message: 'children',
+	      index: index,
+	      slidesToScroll: spec.slidesToScroll,
+	      currentSlide: spec.currentSlide
+	    };
+
 	    if (!spec.lazyLoad | (spec.lazyLoad && spec.lazyLoadedList.indexOf(index) >= 0)) {
 	      child = elem;
 	    } else {
@@ -1585,12 +1630,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      cssClasses = slickClasses;
 	    }
+	    var centerOffset = Math.floor(spec.slidesToShow / 2);
+
+	    var isActive = index > spec.currentSlide - centerOffset - 1 && index <= spec.currentSlide + centerOffset;
 
 	    slides.push(_react2.default.cloneElement(child, {
 	      key: 'original' + getKey(child, index),
 	      'data-index': index,
 	      className: cssClasses,
-	      style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle)
+	      style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle),
+	      onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
 	    }));
 
 	    // variableWidth doesn't wrap properly.
@@ -1603,7 +1652,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          key: 'precloned' + getKey(child, key),
 	          'data-index': key,
 	          className: cssClasses,
-	          style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle)
+	          style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle),
+	          onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
 	        }));
 	      }
 
@@ -1613,7 +1663,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          key: 'postcloned' + getKey(child, key),
 	          'data-index': key,
 	          className: cssClasses,
-	          style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle)
+	          style: (0, _objectAssign2.default)({}, child.props.style || {}, childStyle),
+	          onClick: isActive ? spec.activeSlideClickHandler.bind(null, childOnClickOptions) : spec.focusOnSelect.bind(null, childOnClickOptions)
 	        }));
 	      }
 	    }
@@ -1630,7 +1681,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  displayName: 'Track',
 
 	  render: function render() {
-	    var slides = renderSlides(this.props);
+	    var slides = renderSlides.call(this, this.props);
 	    return _react2.default.createElement(
 	      'div',
 	      { className: 'slick-track', style: this.props.trackStyle },
@@ -1713,7 +1764,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return _react2.default.createElement(
 	      'ul',
-	      { className: this.props.dotsClass, style: { display: 'block' } },
+	      { className: this.props.dotsClass, style: { display: 'block', top: this.props.imgHeight } },
 	      dots
 	    );
 	  }

@@ -10,7 +10,7 @@ react-slick is under active development now.
 Soon this project will have all the features of slick carousel.
 We encourage your feedback and support.
 
-### Installation
+### Installation1
 
 ```bash
 npm install react-slick

@@ -39,17 +39,22 @@ export var InnerSlider = React.createClass({
       });
     }
   },
-  componentDidMount: function componentDidMount() {
-    // Hack for autoplay -- Inspect Later
+  _init: function () {
     this.initialize(this.props);
     this.adaptHeight();
+  },
+  componentDidMount: function () {
+    // Hack for autoplay -- Inspect Later
+    this.onImageLoad(() => {
+      this._init();
+    });
     if (window.addEventListener) {
       window.addEventListener('resize', this.onWindowResized);
     } else {
       window.attachEvent('onresize', this.onWindowResized);
     }
   },
-  componentWillUnmount: function componentWillUnmount() {
+  componentWillUnmount: function () {
     if (window.addEventListener) {
       window.removeEventListener('resize', this.onWindowResized);
     } else {
@@ -74,11 +79,13 @@ export var InnerSlider = React.createClass({
     this.adaptHeight();
   },
   onWindowResized: function () {
-    this.update(this.props);
-    // animating state should be cleared while resizing, otherwise autoplay stops working
-    this.setState({
-      animating: false 
-    })
+    if (this.state.isImagesLoaded) {
+      this.update(this.props);
+      // animating state should be cleared while resizing, otherwise autoplay stops working
+      this.setState({
+        animating: false
+      })
+    }
   },
   render: function () {
     var className = classnames('slick-initialized', 'slick-slider', this.props.className);
@@ -97,7 +104,10 @@ export var InnerSlider = React.createClass({
       slidesToShow: this.props.slidesToShow,
       slideCount: this.state.slideCount,
       trackStyle: this.state.trackStyle,
-      variableWidth: this.props.variableWidth
+      variableWidth: this.props.variableWidth,
+      slidesToScroll: this.props.slidesToScroll,
+      focusOnSelect: this.props.focusOnSelect ? this.selectHandler : () => {},
+      activeSlideClickHandler: this.props.activeSlideClickHandler ? this.props.activeSlideClickHandler : () => {}
     };
 
     var dots;
@@ -109,7 +119,11 @@ export var InnerSlider = React.createClass({
         slidesToShow: this.props.slidesToShow,
         currentSlide: this.state.currentSlide,
         slidesToScroll: this.props.slidesToScroll,
-        clickHandler: this.changeSlide
+        clickHandler: this.changeSlide,
+        imgHeight: this.state.activeSlideImageHeight,
+        dotsTopOffset: this.props.dotsTopOffset || 0,
+        dotsBtnClass: this.props.dotsBtnClass,
+        customClickHandler: this.props.dotsClickHandler ? this.props.dotsClickHandler : () => {}
       };
 
       dots = (<Dots {...dotProps} />);
@@ -125,7 +139,8 @@ export var InnerSlider = React.createClass({
       slidesToShow: this.props.slidesToShow,
       prevArrow: this.props.prevArrow,
       nextArrow: this.props.nextArrow,
-      clickHandler: this.changeSlide
+      clickHandler: this.changeSlide,
+      height: this.state.activeSlideImageHeight
     };
 
     if (this.props.arrows) {
@@ -136,10 +151,18 @@ export var InnerSlider = React.createClass({
     var centerPaddingStyle = null;
 
     if (this.props.vertical === false) {
-      if (this.props.centerMode === true) {
+      if (this.props.centerMode === true && this.props.centerSingleImg === true) {
+        centerPaddingStyle = {
+          padding: (`0 calc((100vw - ${this.state.activeSlideImageWidth}px) / 2)`)
+        };
+      } else if (this.props.centerMode === true) {
         centerPaddingStyle = {
           padding: ('0px ' + this.props.centerPadding)
         };
+      } else if (typeof this.props.slideListPadding !== 'undefined') {
+        centerPaddingStyle = {
+          padding: `0 ${this.props.slideListPadding}px`
+        }
       }
     } else {
       if (this.props.centerMode === true) {
@@ -153,7 +176,7 @@ export var InnerSlider = React.createClass({
       <div className={className} onMouseEnter={this.onInnerSliderEnter} onMouseLeave={this.onInnerSliderLeave}>
         <div
           ref='list'
-          className="slick-list"
+          className={`slick-list ${this.state._isMounted ? '' : 'unmounted'}`}
           style={centerPaddingStyle}
           onMouseDown={this.swipeStart}
           onMouseMove={this.state.dragging ? this.swipeMove: null}
